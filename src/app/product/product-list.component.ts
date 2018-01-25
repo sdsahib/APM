@@ -1,19 +1,33 @@
 
 import { Component } from '@angular/core';
+import { Iproduct } from './product';
+import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
+
 
 
 @Component({
     selector: 'pm-product' ,
-    templateUrl: './product-list.component.html'
+    templateUrl: './product-list.component.html',
+    styleUrls:['./product-list.component.css']
 
 })
-export class ProductListComponent{
+export class ProductListComponent implements OnInit{
     pageTitle: String = 'Product List';
     imageWidth: number = 50;
     imageMargin: number =2;
     showImage: boolean = false;
-    listFilter :String = 'cart';
-        products : any[] = [
+    _listFilter :string ;
+
+    get listFilter():string{
+        return this._listFilter;
+    }
+    set listFilter(value:string){
+        this._listFilter = value;
+        this.filteredProducts = this.listFilter ? this.performFilter(this.listFilter) : this.products;
+    }
+    filteredProducts: Iproduct[];
+
+        products : Iproduct[] = [
             {
                 "productId": 1,
                 "productName": "Leaf Rake",
@@ -65,7 +79,23 @@ export class ProductListComponent{
                 "imageUrl": "http://openclipart.org/image/300px/svg_to_png/120337/xbox-controller_01.png"
             }
         ];
+        
+        constructor(){
+            this.filteredProducts =this.products;
+            this.listFilter ='cart';
+        }
+
+        performFilter(filterBy:string): Iproduct[]{
+            filterBy = filterBy.toLowerCase();
+            return this.products.filter((product:Iproduct)=>
+                product.productName.toLowerCase().indexOf(filterBy)!=-1);      
+        }
+        
         toggleImage():void {
             this.showImage = !this.showImage;
         }
+        ngOnInit():void{
+            console.log("in init");
+        }
+
 }
